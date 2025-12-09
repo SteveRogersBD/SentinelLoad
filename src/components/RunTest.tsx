@@ -47,7 +47,7 @@ export default function RunTest() {
     randomHeaders: false,
     errorInducing: false
   })
-  
+
   // Modal state
   const [showModal, setShowModal] = useState(false)
   const [isLoadingRequest, setIsLoadingRequest] = useState(false)
@@ -83,7 +83,7 @@ export default function RunTest() {
 
   const buildCurlCommand = () => {
     let curl = `curl -X ${httpMethod}`
-    
+
     // Add URL with params
     let url = targetUrl
     const activeParams = params.filter(p => p.key && p.value)
@@ -92,35 +92,35 @@ export default function RunTest() {
       url += `?${queryString}`
     }
     curl += ` "${url}"`
-    
+
     // Add headers
     const activeHeaders = headers.filter(h => h.name && h.value)
     activeHeaders.forEach(h => {
       curl += ` \\\n  -H "${h.name}: ${h.value}"`
     })
-    
+
     // Add auth
     if (authType === 'bearer' && authToken) {
       curl += ` \\\n  -H "Authorization: Bearer ${authToken}"`
     } else if (authType === 'basic' && authUsername && authPassword) {
       curl += ` \\\n  -u "${authUsername}:${authPassword}"`
     }
-    
+
     // Add body
     if (requestBody && httpMethod !== 'GET') {
       curl += ` \\\n  -d '${requestBody}'`
     }
-    
+
     return curl
   }
 
   const sendTestRequest = async () => {
     setIsLoadingRequest(true)
     setResponseData(undefined)
-    
+
     try {
       const startTime = performance.now()
-      
+
       // Build URL with params
       let url = targetUrl
       const activeParams = params.filter(p => p.key && p.value)
@@ -128,35 +128,35 @@ export default function RunTest() {
         const queryString = activeParams.map(p => `${encodeURIComponent(p.key)}=${encodeURIComponent(p.value)}`).join('&')
         url += `?${queryString}`
       }
-      
+
       // Build headers
       const requestHeaders: Record<string, string> = {}
       headers.filter(h => h.name && h.value).forEach(h => {
         requestHeaders[h.name] = h.value
       })
-      
+
       // Add auth headers
       if (authType === 'bearer' && authToken) {
         requestHeaders['Authorization'] = `Bearer ${authToken}`
       } else if (authType === 'basic' && authUsername && authPassword) {
         requestHeaders['Authorization'] = `Basic ${btoa(`${authUsername}:${authPassword}`)}`
       }
-      
+
       // Make request
       const response = await fetch(url, {
         method: httpMethod,
         headers: requestHeaders,
         body: httpMethod !== 'GET' && requestBody ? requestBody : undefined
       })
-      
+
       const endTime = performance.now()
       const responseTime = Math.round(endTime - startTime)
-      
+
       // Parse response
       const contentType = response.headers.get('content-type')
       let body
       const text = await response.text()
-      
+
       if (contentType?.includes('application/json')) {
         try {
           body = JSON.parse(text)
@@ -166,16 +166,16 @@ export default function RunTest() {
       } else {
         body = text
       }
-      
+
       // Get response headers
       const responseHeaders: Record<string, string> = {}
       response.headers.forEach((value, key) => {
         responseHeaders[key] = value
       })
-      
+
       // Calculate size
       const size = new Blob([text]).size / 1024 // KB
-      
+
       setResponseData({
         status: response.status,
         statusText: response.statusText,
@@ -199,34 +199,106 @@ export default function RunTest() {
     }
   }
 
-  const handleStartTest = () => {
+
+
+  const [testStatus, setTestStatus] = useState<any>(null)
+
+  const [showResultModal, setShowResultModal] = useState(false)
+  const [finalStats, setFinalStats] = useState<any>(null)
+
+  // Poll for status
+  useEffect(() => {
+    let interval: number
+
+    if (testStatus?.isRunning) {
+      interval = window.setInterval(async () => {
+        try {
+          const res = await fetch('http://localhost:3000/api/test/status')
+          const data = await res.json()
+
+          if (!data.isRunning && testStatus.isRunning) {
+            // Test just finished
+            setFinalStats(data)
+            setShowResultModal(true)
+            clearInterval(interval)
+          }
+
+          setTestStatus(data)
+        } catch (e) {
+          console.error('Failed to poll status', e)
+        }
+      }, 1000)
+    }
+
+    return () => clearInterval(interval)
+  }, [testStatus?.isRunning])
+
+  const handleStartTest = async () => {
     if (!targetUrl) {
       alert('Please enter a target URL')
       return
     }
-    
-    setShowModal(true)
-    sendTestRequest()
+
+    try {
+      const config = {
+        targetUrl,
+        httpMethod,
+        params,
+        headers: headers.reduce((acc, h) => {
+          if (h.name && h.value) acc[h.name] = h.value
+          return acc
+        }, {} as Record<string, string>),
+        authType,
+        requestBody,
+        startRps,
+        maxRps,
+        duration,
+        attackPattern,
+        workerCount,
+        securityOptions
+      }
+
+      const res = await fetch('http://localhost:3000/api/test/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config)
+      })
+
+      if (res.ok) {
+        setTestStatus({ isRunning: true }) // Optimistic update to start polling
+        setShowModal(false)
+      } else {
+        const err = await res.json()
+        alert('Failed to start test: ' + err.error)
+      }
+    } catch (e: any) {
+      alert('Failed to connect to backend: ' + e.message)
+    }
   }
-  
+
+  const handleStopTest = async () => {
+    try {
+      await fetch('http://localhost:3000/api/test/stop', { method: 'POST' })
+      setTestStatus((prev: any) => ({ ...prev, isRunning: false }))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // Confirm load test just sets the modal logic
   const handleConfirmLoadTest = () => {
-    setShowModal(false)
-    console.log('Starting load test with config:', {
-      targetUrl,
-      httpMethod,
-      params,
-      headers,
-      authType,
-      requestBody,
-      startRps,
-      maxRps,
-      duration,
-      attackPattern,
-      workerCount,
-      securityOptions
-    })
-    // Actual load test logic would go here
+    handleStartTest();
   }
+
+  const openModal = () => {
+    if (!targetUrl) {
+      alert('Please enter a target URL')
+      return
+    }
+    setShowModal(true);
+    sendTestRequest();
+  }
+
 
   // Typing animation
   const [typedText, setTypedText] = useState('')
@@ -269,496 +341,598 @@ export default function RunTest() {
         response={responseData}
         isLoading={isLoadingRequest}
       />
-      
-      <div className="min-h-screen bg-cyber-bg text-soft-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold font-mono mb-2">
-            <span className="text-neon-green">root@sentinel:~$</span>{' '}
-            <span className="text-neon-cyan">./run_test</span>
-          </h1>
-          <p className="text-soft-white/70 font-mono text-sm min-h-[24px]">
-            {typedText}
-            <span className="animate-pulse text-neon-cyan">▊</span>
-          </p>
+
+      {/* Test Result Modal */}
+      {showResultModal && finalStats && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card-bg border border-neon-cyan/50 rounded-lg max-w-2xl w-full p-6 shadow-2xl shadow-neon-cyan/20 animate-in fade-in zoom-in duration-300">
+            <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+              <h2 className="text-2xl font-bold font-mono text-neon-green">Test Complete</h2>
+              <button onClick={() => setShowResultModal(false)} className="text-soft-white/50 hover:text-soft-white">
+                ×
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                <div className="text-soft-white/50 text-xs font-mono uppercase mb-1">Total Requests</div>
+                <div className="text-4xl font-bold font-mono text-soft-white">{finalStats.totalRequests}</div>
+              </div>
+              <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                <div className="text-soft-white/50 text-xs font-mono uppercase mb-1">Success Rate</div>
+                <div className="text-4xl font-bold font-mono text-neon-green">
+                  {Math.round((finalStats.successRequests / (finalStats.totalRequests || 1)) * 100)}%
+                </div>
+              </div>
+              <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                <div className="text-soft-white/50 text-xs font-mono uppercase mb-1">Failed</div>
+                <div className="text-4xl font-bold font-mono text-red-500">{finalStats.failedRequests}</div>
+              </div>
+              <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                <div className="text-soft-white/50 text-xs font-mono uppercase mb-1">Duration</div>
+                <div className="text-4xl font-bold font-mono text-neon-cyan">{finalStats.elapsed}s</div>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowResultModal(false)}
+                className="bg-neon-cyan text-cyber-bg font-bold font-mono py-2 px-6 rounded hover:bg-neon-cyan/90"
+              >
+                CLOSE REPORT
+              </button>
+            </div>
+          </div>
         </div>
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Card 1: Request Builder (Postman-style) */}
-          <div className="bg-card-bg rounded-lg border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5 overflow-hidden">
-            <div className="p-6 pb-4">
-              <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
-                Request Builder
-              </h2>
-              
-              {/* Method + URL */}
-              <div className="flex gap-3 mb-4">
-                <select
-                  value={httpMethod}
-                  onChange={(e) => setHttpMethod(e.target.value)}
-                  className="bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm font-bold focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                >
-                  <option value="GET">GET</option>
-                  <option value="POST">POST</option>
-                  <option value="PUT">PUT</option>
-                  <option value="DELETE">DELETE</option>
-                </select>
-                <input
-                  type="text"
-                  value={targetUrl}
-                  onChange={(e) => setTargetUrl(e.target.value)}
-                  placeholder="https://api.example.com/v1/resource"
-                  className="flex-1 bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                />
-              </div>
+      <div className="min-h-screen bg-cyber-bg text-soft-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-8 flex justify-between items-end">
+            <div>
+              <h1 className="text-3xl font-bold font-mono mb-2">
+                <span className="text-neon-green">root@sentinel:~$</span>{' '}
+                <span className="text-neon-cyan">./run_test</span>
+              </h1>
+              <p className="text-soft-white/70 font-mono text-sm min-h-[24px]">
+                {typedText}
+                <span className="animate-pulse text-neon-cyan">▊</span>
+              </p>
             </div>
 
-            {/* Tabs */}
-            <div className="border-t border-neon-cyan/20">
-              <div className="flex px-6">
-                <button
-                  onClick={() => setActiveTab('params')}
-                  className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${
-                    activeTab === 'params'
-                      ? 'border-neon-cyan text-neon-cyan'
-                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
-                  }`}
-                >
-                  Params
-                </button>
-                <button
-                  onClick={() => setActiveTab('headers')}
-                  className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${
-                    activeTab === 'headers'
-                      ? 'border-neon-cyan text-neon-cyan'
-                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
-                  }`}
-                >
-                  Headers
-                </button>
-                <button
-                  onClick={() => setActiveTab('auth')}
-                  className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${
-                    activeTab === 'auth'
-                      ? 'border-neon-cyan text-neon-cyan'
-                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
-                  }`}
-                >
-                  Auth
-                </button>
-                <button
-                  onClick={() => setActiveTab('body')}
-                  className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${
-                    activeTab === 'body'
-                      ? 'border-neon-cyan text-neon-cyan'
-                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
-                  }`}
-                >
-                  Body
-                </button>
+            {testStatus?.isRunning && (
+              <div className="animate-pulse flex items-center space-x-2 text-neon-green border border-neon-green/30 px-3 py-1 rounded bg-neon-green/10">
+                <div className="w-2 h-2 bg-neon-green rounded-full"></div>
+                <span className="font-mono text-sm font-bold">ATTACK ACTIVE</span>
               </div>
-            </div>
+            )}
+          </div>
 
-            {/* Tab Content */}
-            <div className="p-6 min-h-[300px]">
-              {/* Params Tab */}
-              {activeTab === 'params' && (
-                <div>
-                  <div className="space-y-2 mb-3">
-                    <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-xs font-mono text-soft-white/50 px-1">
-                      <span>KEY</span>
-                      <span>VALUE</span>
-                      <span className="w-8"></span>
-                    </div>
-                    {params.map((param) => (
-                      <div key={param.id} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-                        <input
-                          type="text"
-                          value={param.key}
-                          onChange={(e) => updateParam(param.id, 'key', e.target.value)}
-                          placeholder="key"
-                          className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
-                        />
-                        <input
-                          type="text"
-                          value={param.value}
-                          onChange={(e) => updateParam(param.id, 'value', e.target.value)}
-                          placeholder="value"
-                          className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
-                        />
-                        <button
-                          onClick={() => removeParam(param.id)}
-                          className="w-8 h-8 bg-cyber-bg border border-red-500/30 rounded text-red-400 hover:bg-red-500/10 transition-all text-sm"
-                        >
-                          ×
-                        </button>
+          {/* Live Dashboard Overlay or Card */}
+          {(testStatus && (testStatus.totalRequests > 0 || testStatus.isRunning)) && (
+            <div className="mb-8 bg-card-bg border border-neon-cyan/50 rounded-lg p-6 shadow-lg shadow-neon-cyan/10">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-neon-cyan font-mono text-lg font-bold">Live Attack Telemetry</h3>
+                {testStatus.isRunning && (
+                  <button onClick={handleStopTest} className="bg-red-500/20 text-red-500 border border-red-500/50 px-4 py-1 rounded font-mono text-xs hover:bg-red-500/30">
+                    ABORT ATTACK
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                  <div className="text-soft-white/50 text-xs font-mono uppercase">Current RPS</div>
+                  <div className="text-2xl font-bold font-mono text-neon-green">{testStatus.currentRps}</div>
+                </div>
+                <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                  <div className="text-soft-white/50 text-xs font-mono uppercase">Total Sent</div>
+                  <div className="text-2xl font-bold font-mono text-soft-white">{testStatus.totalRequests}</div>
+                </div>
+                <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                  <div className="text-soft-white/50 text-xs font-mono uppercase">Failed</div>
+                  <div className="text-2xl font-bold font-mono text-red-400">{testStatus.failedRequests}</div>
+                </div>
+                <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                  <div className="text-soft-white/50 text-xs font-mono uppercase">Elapsed</div>
+                  <div className="text-2xl font-bold font-mono text-neon-cyan">{testStatus.elapsed}s</div>
+                </div>
+                <div className="bg-cyber-bg/50 p-4 rounded border border-white/5">
+                  <div className="text-soft-white/50 text-xs font-mono uppercase">Last Status</div>
+                  <div className={`text-2xl font-bold font-mono ${testStatus.lastResponseCode >= 400 ? 'text-red-400' : 'text-neon-green'}`}>
+                    {testStatus.lastResponseCode || '-'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Activity Log */}
+              {testStatus.recentLogs && testStatus.recentLogs.length > 0 && (
+                <div className="mt-4 bg-black/40 rounded border border-white/10 p-4 h-48 overflow-y-auto font-mono text-xs">
+                  <div className="text-soft-white/50 mb-2 uppercase tracking-wider">Activity Log</div>
+                  <div className="space-y-1">
+                    {testStatus.recentLogs.map((log: string, i: number) => (
+                      <div key={i} className={`${log.includes('Error') ? 'text-red-400' : 'text-soft-white/80'}`}>
+                        {log}
                       </div>
                     ))}
                   </div>
-                  <button
-                    onClick={addParam}
-                    className="text-sm font-mono text-neon-green hover:text-neon-cyan transition-colors"
-                  >
-                    + Add Parameter
-                  </button>
                 </div>
               )}
+            </div>
+          )}
 
-              {/* Headers Tab */}
-              {activeTab === 'headers' && (
-                <div>
-                  <div className="space-y-2 mb-3">
-                    <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-xs font-mono text-soft-white/50 px-1">
-                      <span>KEY</span>
-                      <span>VALUE</span>
-                      <span className="w-8"></span>
-                    </div>
-                    {headers.map((header) => (
-                      <div key={header.id} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-                        <input
-                          type="text"
-                          value={header.name}
-                          onChange={(e) => updateHeader(header.id, 'name', e.target.value)}
-                          placeholder="Content-Type"
-                          className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
-                        />
-                        <input
-                          type="text"
-                          value={header.value}
-                          onChange={(e) => updateHeader(header.id, 'value', e.target.value)}
-                          placeholder="application/json"
-                          className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
-                        />
-                        <button
-                          onClick={() => removeHeader(header.id)}
-                          className="w-8 h-8 bg-cyber-bg border border-red-500/30 rounded text-red-400 hover:bg-red-500/10 transition-all text-sm"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={addHeader}
-                    className="text-sm font-mono text-neon-green hover:text-neon-cyan transition-colors"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Card 1: Request Builder (Postman-style) */}
+            <div className="bg-card-bg rounded-lg border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5 overflow-hidden">
+              <div className="p-6 pb-4">
+                <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
+                  Request Builder
+                </h2>
+
+                {/* Method + URL */}
+                <div className="flex gap-3 mb-4">
+                  <select
+                    value={httpMethod}
+                    onChange={(e) => setHttpMethod(e.target.value)}
+                    className="bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm font-bold focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
                   >
-                    + Add Header
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                  </select>
+                  <input
+                    type="text"
+                    value={targetUrl}
+                    onChange={(e) => setTargetUrl(e.target.value)}
+                    placeholder="https://api.example.com/v1/resource"
+                    className="flex-1 bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Tabs */}
+              <div className="border-t border-neon-cyan/20">
+                <div className="flex px-6">
+                  <button
+                    onClick={() => setActiveTab('params')}
+                    className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${activeTab === 'params'
+                      ? 'border-neon-cyan text-neon-cyan'
+                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
+                      }`}
+                  >
+                    Params
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('headers')}
+                    className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${activeTab === 'headers'
+                      ? 'border-neon-cyan text-neon-cyan'
+                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
+                      }`}
+                  >
+                    Headers
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('auth')}
+                    className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${activeTab === 'auth'
+                      ? 'border-neon-cyan text-neon-cyan'
+                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
+                      }`}
+                  >
+                    Auth
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('body')}
+                    className={`px-4 py-3 font-mono text-sm border-b-2 transition-all ${activeTab === 'body'
+                      ? 'border-neon-cyan text-neon-cyan'
+                      : 'border-transparent text-soft-white/60 hover:text-soft-white'
+                      }`}
+                  >
+                    Body
                   </button>
                 </div>
-              )}
+              </div>
 
-              {/* Auth Tab */}
-              {activeTab === 'auth' && (
-                <div className="space-y-4">
+              {/* Tab Content */}
+              <div className="p-6 min-h-[300px]">
+                {/* Params Tab */}
+                {activeTab === 'params' && (
                   <div>
-                    <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                      Auth Type
-                    </label>
-                    <select
-                      value={authType}
-                      onChange={(e) => setAuthType(e.target.value)}
-                      className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                    <div className="space-y-2 mb-3">
+                      <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-xs font-mono text-soft-white/50 px-1">
+                        <span>KEY</span>
+                        <span>VALUE</span>
+                        <span className="w-8"></span>
+                      </div>
+                      {params.map((param) => (
+                        <div key={param.id} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                          <input
+                            type="text"
+                            value={param.key}
+                            onChange={(e) => updateParam(param.id, 'key', e.target.value)}
+                            placeholder="key"
+                            className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
+                          />
+                          <input
+                            type="text"
+                            value={param.value}
+                            onChange={(e) => updateParam(param.id, 'value', e.target.value)}
+                            placeholder="value"
+                            className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
+                          />
+                          <button
+                            onClick={() => removeParam(param.id)}
+                            className="w-8 h-8 bg-cyber-bg border border-red-500/30 rounded text-red-400 hover:bg-red-500/10 transition-all text-sm"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={addParam}
+                      className="text-sm font-mono text-neon-green hover:text-neon-cyan transition-colors"
                     >
-                      <option value="none">No Auth</option>
-                      <option value="bearer">Bearer Token</option>
-                      <option value="basic">Basic Auth</option>
-                      <option value="apikey">API Key</option>
-                    </select>
+                      + Add Parameter
+                    </button>
                   </div>
+                )}
 
-                  {authType === 'bearer' && (
+                {/* Headers Tab */}
+                {activeTab === 'headers' && (
+                  <div>
+                    <div className="space-y-2 mb-3">
+                      <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-xs font-mono text-soft-white/50 px-1">
+                        <span>KEY</span>
+                        <span>VALUE</span>
+                        <span className="w-8"></span>
+                      </div>
+                      {headers.map((header) => (
+                        <div key={header.id} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                          <input
+                            type="text"
+                            value={header.name}
+                            onChange={(e) => updateHeader(header.id, 'name', e.target.value)}
+                            placeholder="Content-Type"
+                            className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
+                          />
+                          <input
+                            type="text"
+                            value={header.value}
+                            onChange={(e) => updateHeader(header.id, 'value', e.target.value)}
+                            placeholder="application/json"
+                            className="bg-cyber-bg border border-neon-cyan/30 rounded px-3 py-2 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan transition-all"
+                          />
+                          <button
+                            onClick={() => removeHeader(header.id)}
+                            className="w-8 h-8 bg-cyber-bg border border-red-500/30 rounded text-red-400 hover:bg-red-500/10 transition-all text-sm"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={addHeader}
+                      className="text-sm font-mono text-neon-green hover:text-neon-cyan transition-colors"
+                    >
+                      + Add Header
+                    </button>
+                  </div>
+                )}
+
+                {/* Auth Tab */}
+                {activeTab === 'auth' && (
+                  <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                        Token
+                        Auth Type
                       </label>
-                      <input
-                        type="text"
-                        value={authToken}
-                        onChange={(e) => setAuthToken(e.target.value)}
-                        placeholder="your-bearer-token"
+                      <select
+                        value={authType}
+                        onChange={(e) => setAuthType(e.target.value)}
                         className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                      />
+                      >
+                        <option value="none">No Auth</option>
+                        <option value="bearer">Bearer Token</option>
+                        <option value="basic">Basic Auth</option>
+                        <option value="apikey">API Key</option>
+                      </select>
                     </div>
-                  )}
 
-                  {authType === 'basic' && (
-                    <>
+                    {authType === 'bearer' && (
                       <div>
                         <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                          Username
+                          Token
                         </label>
                         <input
                           type="text"
-                          value={authUsername}
-                          onChange={(e) => setAuthUsername(e.target.value)}
-                          placeholder="username"
+                          value={authToken}
+                          onChange={(e) => setAuthToken(e.target.value)}
+                          placeholder="your-bearer-token"
                           className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          value={authPassword}
-                          onChange={(e) => setAuthPassword(e.target.value)}
-                          placeholder="password"
-                          className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                        />
-                      </div>
-                    </>
-                  )}
+                    )}
 
-                  {authType === 'apikey' && (
-                    <>
-                      <div>
-                        <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                          Key
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="X-API-Key"
-                          className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                          Value
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="your-api-key"
-                          className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                        />
-                      </div>
-                    </>
-                  )}
+                    {authType === 'basic' && (
+                      <>
+                        <div>
+                          <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                            Username
+                          </label>
+                          <input
+                            type="text"
+                            value={authUsername}
+                            onChange={(e) => setAuthUsername(e.target.value)}
+                            placeholder="username"
+                            className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                            Password
+                          </label>
+                          <input
+                            type="password"
+                            value={authPassword}
+                            onChange={(e) => setAuthPassword(e.target.value)}
+                            placeholder="password"
+                            className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                          />
+                        </div>
+                      </>
+                    )}
 
-                  {authType === 'none' && (
-                    <p className="text-sm text-soft-white/50 font-mono">
-                      No authentication will be used for this request.
+                    {authType === 'apikey' && (
+                      <>
+                        <div>
+                          <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                            Key
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="X-API-Key"
+                            className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                            Value
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="your-api-key"
+                            className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {authType === 'none' && (
+                      <p className="text-sm text-soft-white/50 font-mono">
+                        No authentication will be used for this request.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Body Tab */}
+                {activeTab === 'body' && (
+                  <div>
+                    <textarea
+                      value={requestBody}
+                      onChange={(e) => setRequestBody(e.target.value)}
+                      placeholder='{\n  "key": "value",\n  "data": "example"\n}'
+                      rows={10}
+                      className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all resize-none"
+                    />
+                    <p className="mt-2 text-xs text-soft-white/50 font-mono">
+                      {httpMethod === 'GET' ? 'Body is typically not used with GET requests' : 'Raw JSON body for the request'}
                     </p>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
+            </div>
 
-              {/* Body Tab */}
-              {activeTab === 'body' && (
+            {/* Card 2: Load Profile */}
+            <div className="bg-card-bg rounded-lg p-6 border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5">
+              <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
+                Load Profile
+              </h2>
+
+              <div className="space-y-5">
                 <div>
-                  <textarea
-                    value={requestBody}
-                    onChange={(e) => setRequestBody(e.target.value)}
-                    placeholder='{\n  "key": "value",\n  "data": "example"\n}'
-                    rows={10}
-                    className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all resize-none"
+                  <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                    Start RPS
+                  </label>
+                  <input
+                    type="number"
+                    value={startRps}
+                    onChange={(e) => setStartRps(Number(e.target.value))}
+                    min="1"
+                    className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
                   />
-                  <p className="mt-2 text-xs text-soft-white/50 font-mono">
-                    {httpMethod === 'GET' ? 'Body is typically not used with GET requests' : 'Raw JSON body for the request'}
+                  <p className="mt-1 text-xs text-soft-white/50 font-mono">
+                    How many requests per second to begin with
                   </p>
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* Card 2: Load Profile */}
-          <div className="bg-card-bg rounded-lg p-6 border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5">
-            <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
-              Load Profile
-            </h2>
-            
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                  Start RPS
-                </label>
-                <input
-                  type="number"
-                  value={startRps}
-                  onChange={(e) => setStartRps(Number(e.target.value))}
-                  min="1"
-                  className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                />
-                <p className="mt-1 text-xs text-soft-white/50 font-mono">
-                  How many requests per second to begin with
-                </p>
-              </div>
+                <div>
+                  <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                    Max RPS
+                  </label>
+                  <input
+                    type="number"
+                    value={maxRps}
+                    onChange={(e) => setMaxRps(Number(e.target.value))}
+                    min="1"
+                    className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                  />
+                  <p className="mt-1 text-xs text-soft-white/50 font-mono">
+                    Maximum requests per second at peak load
+                  </p>
+                </div>
 
-              <div>
-                <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                  Max RPS
-                </label>
-                <input
-                  type="number"
-                  value={maxRps}
-                  onChange={(e) => setMaxRps(Number(e.target.value))}
-                  min="1"
-                  className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                />
-                <p className="mt-1 text-xs text-soft-white/50 font-mono">
-                  Maximum requests per second at peak load
-                </p>
-              </div>
+                <div>
+                  <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                    Duration (seconds)
+                  </label>
+                  <input
+                    type="number"
+                    value={duration}
+                    onChange={(e) => setDuration(Number(e.target.value))}
+                    min="1"
+                    className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                  />
+                  <p className="mt-1 text-xs text-soft-white/50 font-mono">
+                    Total time to run the load test
+                  </p>
+                </div>
 
-              <div>
-                <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                  Duration (seconds)
-                </label>
-                <input
-                  type="number"
-                  value={duration}
-                  onChange={(e) => setDuration(Number(e.target.value))}
-                  min="1"
-                  className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                />
-                <p className="mt-1 text-xs text-soft-white/50 font-mono">
-                  Total time to run the load test
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                  Attack Pattern
-                </label>
-                <select
-                  value={attackPattern}
-                  onChange={(e) => setAttackPattern(e.target.value)}
-                  className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                >
-                  <option value="sustained">Sustained</option>
-                  <option value="burst">Burst</option>
-                  <option value="spike">Spike</option>
-                  <option value="ramp-up">Ramp-up</option>
-                  <option value="random">Random</option>
-                </select>
-                <p className="mt-1 text-xs text-soft-white/50 font-mono">
-                  How traffic intensity changes over time
-                </p>
+                <div>
+                  <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                    Attack Pattern
+                  </label>
+                  <select
+                    value={attackPattern}
+                    onChange={(e) => setAttackPattern(e.target.value)}
+                    className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                  >
+                    <option value="sustained">Sustained</option>
+                    <option value="burst">Burst</option>
+                    <option value="spike">Spike</option>
+                    <option value="ramp-up">Ramp-up</option>
+                    <option value="random">Random</option>
+                  </select>
+                  <p className="mt-1 text-xs text-soft-white/50 font-mono">
+                    How traffic intensity changes over time
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Card 3: Security Simulation Options */}
-          <div className="bg-card-bg rounded-lg p-6 border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5">
-            <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
-              Security Behavior
-            </h2>
-            
-            <div className="space-y-4">
-              <label className="flex items-start space-x-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={securityOptions.endpointScanning}
-                  onChange={(e) => setSecurityOptions({...securityOptions, endpointScanning: e.target.checked})}
-                  className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-neon-cyan focus:ring-offset-0"
-                />
-                <div>
-                  <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
-                    Simulate endpoint scanning
-                  </div>
-                  <div className="text-xs text-soft-white/50 font-mono mt-0.5">
-                    Hit many different paths to test API discovery defenses
-                  </div>
-                </div>
-              </label>
+            {/* Card 3: Security Simulation Options */}
+            <div className="bg-card-bg rounded-lg p-6 border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5">
+              <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
+                Security Behavior
+              </h2>
 
-              <label className="flex items-start space-x-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={securityOptions.bruteForce}
-                  onChange={(e) => setSecurityOptions({...securityOptions, bruteForce: e.target.checked})}
-                  className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-neon-cyan focus:ring-offset-0"
-                />
-                <div>
-                  <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
-                    Simulate brute-force behavior
+              <div className="space-y-4">
+                <label className="flex items-start space-x-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={securityOptions.endpointScanning}
+                    onChange={(e) => setSecurityOptions({ ...securityOptions, endpointScanning: e.target.checked })}
+                    className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-neon-cyan focus:ring-offset-0"
+                  />
+                  <div>
+                    <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
+                      Simulate endpoint scanning
+                    </div>
+                    <div className="text-xs text-soft-white/50 font-mono mt-0.5">
+                      Hit many different paths to test API discovery defenses
+                    </div>
                   </div>
-                  <div className="text-xs text-soft-white/50 font-mono mt-0.5">
-                    Repeat same request many times to test rate limiting
-                  </div>
-                </div>
-              </label>
-
-              <label className="flex items-start space-x-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={securityOptions.randomHeaders}
-                  onChange={(e) => setSecurityOptions({...securityOptions, randomHeaders: e.target.checked})}
-                  className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-neon-cyan focus:ring-offset-0"
-                />
-                <div>
-                  <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
-                    Simulate bot-like random headers
-                  </div>
-                  <div className="text-xs text-soft-white/50 font-mono mt-0.5">
-                    Vary user-agents and headers to mimic bot traffic
-                  </div>
-                </div>
-              </label>
-
-              <label className="flex items-start space-x-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={securityOptions.errorInducing}
-                  onChange={(e) => setSecurityOptions({...securityOptions, errorInducing: e.target.checked})}
-                  className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-offset-0"
-                />
-                <div>
-                  <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
-                    Send error-inducing requests
-                  </div>
-                  <div className="text-xs text-soft-white/50 font-mono mt-0.5">
-                    Include malformed data to test error handling
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          {/* Card 4: Workers & Controls */}
-          <div className="bg-card-bg rounded-lg p-6 border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5">
-            <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
-              Worker Nodes
-            </h2>
-            
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-mono mb-2 text-soft-white/90">
-                  Worker Count
                 </label>
-                <input
-                  type="number"
-                  value={workerCount}
-                  onChange={(e) => setWorkerCount(Number(e.target.value))}
-                  min="1"
-                  max="10"
-                  className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
-                />
-                <p className="mt-1 text-xs text-soft-white/50 font-mono">
-                  Workers act like mini legal botnet nodes generating distributed traffic
-                </p>
-              </div>
 
-              <div className="pt-4 space-y-3">
-                <button
-                  onClick={handleStartTest}
-                  className="w-full bg-neon-cyan text-cyber-bg font-bold font-mono py-3.5 px-6 rounded hover:bg-neon-cyan/90 transition-all shadow-lg shadow-neon-cyan/20 hover:shadow-neon-cyan/40"
-                >
-                  START LOAD TEST
-                </button>
-                
-                <button
-                  disabled
-                  className="w-full text-soft-white/30 font-mono text-sm py-2 hover:text-soft-white/50 transition-colors cursor-not-allowed"
-                >
-                  view live dashboard →
-                </button>
+                <label className="flex items-start space-x-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={securityOptions.bruteForce}
+                    onChange={(e) => setSecurityOptions({ ...securityOptions, bruteForce: e.target.checked })}
+                    className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-neon-cyan focus:ring-offset-0"
+                  />
+                  <div>
+                    <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
+                      Simulate brute-force behavior
+                    </div>
+                    <div className="text-xs text-soft-white/50 font-mono mt-0.5">
+                      Repeat same request many times to test rate limiting
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex items-start space-x-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={securityOptions.randomHeaders}
+                    onChange={(e) => setSecurityOptions({ ...securityOptions, randomHeaders: e.target.checked })}
+                    className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-neon-cyan focus:ring-offset-0"
+                  />
+                  <div>
+                    <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
+                      Simulate bot-like random headers
+                    </div>
+                    <div className="text-xs text-soft-white/50 font-mono mt-0.5">
+                      Vary user-agents and headers to mimic bot traffic
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex items-start space-x-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={securityOptions.errorInducing}
+                    onChange={(e) => setSecurityOptions({ ...securityOptions, errorInducing: e.target.checked })}
+                    className="mt-1 w-4 h-4 bg-cyber-bg border-neon-cyan/30 rounded text-neon-cyan focus:ring-offset-0"
+                  />
+                  <div>
+                    <div className="text-sm font-mono text-soft-white group-hover:text-neon-cyan transition-colors">
+                      Send error-inducing requests
+                    </div>
+                    <div className="text-xs text-soft-white/50 font-mono mt-0.5">
+                      Include malformed data to test error handling
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Card 4: Workers & Controls */}
+            <div className="bg-card-bg rounded-lg p-6 border border-neon-cyan/20 shadow-lg shadow-neon-cyan/5">
+              <h2 className="text-xl font-bold font-mono mb-6 text-neon-cyan">
+                Worker Nodes
+              </h2>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-mono mb-2 text-soft-white/90">
+                    Worker Count
+                  </label>
+                  <input
+                    type="number"
+                    value={workerCount}
+                    onChange={(e) => setWorkerCount(Number(e.target.value))}
+                    min="1"
+                    max="10"
+                    className="w-full bg-cyber-bg border border-neon-cyan/30 rounded px-4 py-2.5 text-soft-white font-mono text-sm focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition-all"
+                  />
+                  <p className="mt-1 text-xs text-soft-white/50 font-mono">
+                    Workers act like mini legal botnet nodes generating distributed traffic
+                  </p>
+                </div>
+
+                <div className="pt-4 space-y-3">
+                  <button
+                    onClick={openModal}
+                    className="w-full bg-neon-cyan text-cyber-bg font-bold font-mono py-3.5 px-6 rounded hover:bg-neon-cyan/90 transition-all shadow-lg shadow-neon-cyan/20 hover:shadow-neon-cyan/40"
+                    disabled={testStatus?.isRunning}
+                  >
+                    {testStatus?.isRunning ? 'TEST RUNNING...' : 'START LOAD TEST'}
+                  </button>
+
+                  <button
+                    disabled
+                    className="w-full text-soft-white/30 font-mono text-sm py-2 hover:text-soft-white/50 transition-colors cursor-not-allowed"
+                  >
+                    view live dashboard →
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   )
 }

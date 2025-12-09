@@ -1,0 +1,229 @@
+2025-12-09T02:23:18.561Z: Starting test with config: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3}
+2025-12-09T02:23:19.569Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:20.572Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:21.573Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:22.585Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:23.593Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:24.606Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:25.617Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:26.632Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:27.641Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:28.646Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:29.655Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:30.663Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:31.677Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:32.683Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:33.687Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:34.700Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:35.706Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:36.714Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:37.723Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:38.736Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:39.742Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:40.750Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:41.763Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:42.764Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:43.775Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:44.786Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:45.795Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:46.809Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:47.820Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:48.830Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:49.836Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:50.846Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:51.858Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:52.867Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:53.872Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:54.878Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:55.888Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:56.899Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:57.909Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:58.923Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:23:59.933Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:00.944Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:01.951Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:02.956Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:03.967Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:04.975Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:05.985Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:06.994Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:07.995Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:09.007Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:10.018Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:11.027Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:12.042Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:13.043Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:14.050Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:15.057Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:16.068Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:17.079Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:24:18.094Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:08.877Z: Starting test with config: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":30,"attackPattern":"sustained","workerCount":3}
+2025-12-09T02:26:09.887Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:10.901Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:11.911Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:12.921Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:13.930Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:14.935Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:15.943Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:16.948Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:17.955Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:18.965Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:19.975Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:20.984Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:21.996Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:22.999Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:24.010Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:25.012Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:26.019Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:27.027Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:28.038Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:29.050Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:30.054Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:31.065Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:32.072Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:33.077Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:34.080Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:35.085Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:36.092Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:37.100Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:26:38.103Z: [LoadTest] RPS: 0 | Total: 0
+2025-12-09T02:28:15.150Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3}
+2025-12-09T02:28:16.156Z: [LoadTest] RPS: 93 | Total: 93 | LastStatus: 200
+2025-12-09T02:28:17.163Z: [LoadTest] RPS: 99 | Total: 192 | LastStatus: 200
+2025-12-09T02:28:18.171Z: [LoadTest] RPS: 96 | Total: 288 | LastStatus: 200
+2025-12-09T02:28:19.178Z: [LoadTest] RPS: 99 | Total: 387 | LastStatus: 200
+2025-12-09T02:28:20.188Z: [LoadTest] RPS: 96 | Total: 483 | LastStatus: 200
+2025-12-09T02:28:21.197Z: [LoadTest] RPS: 99 | Total: 582 | LastStatus: 200
+2025-12-09T02:28:22.198Z: [LoadTest] RPS: 96 | Total: 678 | LastStatus: 200
+2025-12-09T02:28:23.205Z: [LoadTest] RPS: 96 | Total: 774 | LastStatus: 200
+2025-12-09T02:28:24.218Z: [LoadTest] RPS: 99 | Total: 873 | LastStatus: 200
+2025-12-09T02:28:25.232Z: [LoadTest] RPS: 96 | Total: 969 | LastStatus: 200
+2025-12-09T02:28:26.239Z: [LoadTest] RPS: 96 | Total: 1065 | LastStatus: 200
+2025-12-09T02:28:27.249Z: [LoadTest] RPS: 99 | Total: 1164 | LastStatus: 200
+2025-12-09T02:28:28.257Z: [LoadTest] RPS: 96 | Total: 1260 | LastStatus: 200
+2025-12-09T02:28:29.268Z: [LoadTest] RPS: 99 | Total: 1359 | LastStatus: 200
+2025-12-09T02:28:30.273Z: [LoadTest] RPS: 96 | Total: 1455 | LastStatus: 200
+2025-12-09T02:28:31.272Z: [LoadTest] RPS: 99 | Total: 1554 | LastStatus: 200
+2025-12-09T02:28:32.274Z: [LoadTest] RPS: 96 | Total: 1650 | LastStatus: 200
+2025-12-09T02:28:33.285Z: [LoadTest] RPS: 96 | Total: 1746 | LastStatus: 200
+2025-12-09T02:28:34.295Z: [LoadTest] RPS: 99 | Total: 1845 | LastStatus: 200
+2025-12-09T02:28:35.306Z: [LoadTest] RPS: 96 | Total: 1941 | LastStatus: 200
+2025-12-09T02:28:36.313Z: [LoadTest] RPS: 99 | Total: 2040 | LastStatus: 200
+2025-12-09T02:28:37.325Z: [LoadTest] RPS: 96 | Total: 2136 | LastStatus: 200
+2025-12-09T02:28:38.334Z: [LoadTest] RPS: 99 | Total: 2235 | LastStatus: 200
+2025-12-09T02:28:39.346Z: [LoadTest] RPS: 96 | Total: 2331 | LastStatus: 200
+2025-12-09T02:28:40.357Z: [LoadTest] RPS: 99 | Total: 2430 | LastStatus: 200
+2025-12-09T02:28:41.367Z: [LoadTest] RPS: 96 | Total: 2526 | LastStatus: 200
+2025-12-09T02:28:42.378Z: [LoadTest] RPS: 99 | Total: 2625 | LastStatus: 200
+2025-12-09T02:28:43.383Z: [LoadTest] RPS: 96 | Total: 2721 | LastStatus: 200
+2025-12-09T02:28:44.384Z: [LoadTest] RPS: 99 | Total: 2820 | LastStatus: 200
+2025-12-09T02:28:45.390Z: [LoadTest] RPS: 96 | Total: 2916 | LastStatus: 200
+2025-12-09T02:28:46.398Z: [LoadTest] RPS: 96 | Total: 3012 | LastStatus: 200
+2025-12-09T02:28:47.411Z: [LoadTest] RPS: 99 | Total: 3111 | LastStatus: 200
+2025-12-09T02:28:48.423Z: [LoadTest] RPS: 96 | Total: 3207 | LastStatus: 200
+2025-12-09T02:28:49.432Z: [LoadTest] RPS: 99 | Total: 3306 | LastStatus: 200
+2025-12-09T02:28:50.442Z: [LoadTest] RPS: 96 | Total: 3402 | LastStatus: 200
+2025-12-09T02:28:51.447Z: [LoadTest] RPS: 99 | Total: 3501 | LastStatus: 200
+2025-12-09T02:28:52.461Z: [LoadTest] RPS: 96 | Total: 3597 | LastStatus: 200
+2025-12-09T02:28:53.463Z: [LoadTest] RPS: 99 | Total: 3696 | LastStatus: 200
+2025-12-09T02:28:54.475Z: [LoadTest] RPS: 96 | Total: 3792 | LastStatus: 200
+2025-12-09T02:28:55.483Z: [LoadTest] RPS: 99 | Total: 3891 | LastStatus: 200
+2025-12-09T02:28:56.491Z: [LoadTest] RPS: 96 | Total: 3987 | LastStatus: 200
+2025-12-09T02:28:57.503Z: [LoadTest] RPS: 96 | Total: 4083 | LastStatus: 200
+2025-12-09T02:28:58.516Z: [LoadTest] RPS: 99 | Total: 4182 | LastStatus: 200
+2025-12-09T02:28:59.526Z: [LoadTest] RPS: 96 | Total: 4278 | LastStatus: 200
+2025-12-09T02:29:00.535Z: [LoadTest] RPS: 99 | Total: 4377 | LastStatus: 200
+2025-12-09T02:29:01.543Z: [LoadTest] RPS: 96 | Total: 4473 | LastStatus: 200
+2025-12-09T02:29:02.545Z: [LoadTest] RPS: 99 | Total: 4572 | LastStatus: 200
+2025-12-09T02:29:03.558Z: [LoadTest] RPS: 96 | Total: 4668 | LastStatus: 200
+2025-12-09T02:29:04.564Z: [LoadTest] RPS: 96 | Total: 4764 | LastStatus: 200
+2025-12-09T02:29:05.577Z: [LoadTest] RPS: 99 | Total: 4863 | LastStatus: 200
+2025-12-09T02:29:06.587Z: [LoadTest] RPS: 96 | Total: 4959 | LastStatus: 200
+2025-12-09T02:29:07.591Z: [LoadTest] RPS: 99 | Total: 5058 | LastStatus: 200
+2025-12-09T02:29:08.593Z: [LoadTest] RPS: 96 | Total: 5154 | LastStatus: 200
+2025-12-09T02:29:09.602Z: [LoadTest] RPS: 96 | Total: 5250 | LastStatus: 200
+2025-12-09T02:29:10.611Z: [LoadTest] RPS: 99 | Total: 5349 | LastStatus: 200
+2025-12-09T02:29:11.618Z: [LoadTest] RPS: 96 | Total: 5445 | LastStatus: 200
+2025-12-09T02:29:12.627Z: [LoadTest] RPS: 99 | Total: 5544 | LastStatus: 200
+2025-12-09T02:29:13.638Z: [LoadTest] RPS: 96 | Total: 5640 | LastStatus: 200
+2025-12-09T02:29:14.649Z: [LoadTest] RPS: 99 | Total: 5739 | LastStatus: 200
+2025-12-09T02:29:15.198Z: Stopping load test
+2025-12-09T02:37:12.675Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":10,"attackPattern":"sustained","workerCount":3}
+2025-12-09T02:37:13.684Z: [LoadTest] RPS: 150 | Total: 96 | LastStatus: 200
+2025-12-09T02:37:14.689Z: [LoadTest] RPS: 96 | Total: 192 | LastStatus: 200
+2025-12-09T02:37:15.699Z: [LoadTest] RPS: 96 | Total: 288 | LastStatus: 200
+2025-12-09T02:37:16.700Z: [LoadTest] RPS: 96 | Total: 384 | LastStatus: 200
+2025-12-09T02:37:17.708Z: [LoadTest] RPS: 99 | Total: 483 | LastStatus: 200
+2025-12-09T02:37:18.713Z: [LoadTest] RPS: 96 | Total: 579 | LastStatus: 200
+2025-12-09T02:37:19.720Z: [LoadTest] RPS: 99 | Total: 678 | LastStatus: 200
+2025-12-09T02:37:20.733Z: [LoadTest] RPS: 96 | Total: 774 | LastStatus: 200
+2025-12-09T02:37:21.746Z: [LoadTest] RPS: 99 | Total: 873 | LastStatus: 200
+2025-12-09T02:37:22.685Z: Stopping load test
+2025-12-09T02:42:49.627Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":10,"attackPattern":"sustained","workerCount":3}
+2025-12-09T02:42:50.628Z: [LoadTest] RPS: 189 | Total: 99 | LastStatus: 200
+2025-12-09T02:42:51.639Z: [LoadTest] RPS: 96 | Total: 195 | LastStatus: 200
+2025-12-09T02:42:52.650Z: [LoadTest] RPS: 96 | Total: 291 | LastStatus: 200
+2025-12-09T02:42:53.657Z: [LoadTest] RPS: 96 | Total: 387 | LastStatus: 200
+2025-12-09T02:42:54.667Z: [LoadTest] RPS: 96 | Total: 483 | LastStatus: 200
+2025-12-09T02:42:55.678Z: [LoadTest] RPS: 99 | Total: 582 | LastStatus: 200
+2025-12-09T02:42:56.686Z: [LoadTest] RPS: 96 | Total: 678 | LastStatus: 200
+2025-12-09T02:42:57.692Z: [LoadTest] RPS: 96 | Total: 774 | LastStatus: 200
+2025-12-09T02:42:58.702Z: [LoadTest] RPS: 99 | Total: 873 | LastStatus: 200
+2025-12-09T02:42:59.642Z: Stopping load test
+2025-12-09T02:46:39.453Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":10,"duration":10,"attackPattern":"sustained","workerCount":3}
+2025-12-09T02:46:49.495Z: Stopping load test
+2025-12-09T08:35:46.835Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3}
+2025-12-09T08:36:05.949Z: Stopping load test
+2025-12-09T09:37:58.694Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":20,"attackPattern":"sustained","workerCount":3}
+2025-12-09T09:38:03.016Z: Stopping load test
+2025-12-09T09:55:12.784Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":20,"attackPattern":"sustained","workerCount":3}
+2025-12-09T09:55:16.795Z: Stopping load test
+2025-12-09T11:54:37.671Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"burst","workerCount":3}
+2025-12-09T11:55:00.807Z: Stopping load test
+2025-12-09T11:55:09.646Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"spike","workerCount":3}
+2025-12-09T11:55:58.599Z: Stopping load test
+2025-12-09T11:56:01.477Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"ramp-up","workerCount":3}
+2025-12-09T11:56:39.460Z: Stopping load test
+2025-12-09T12:14:44.944Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":101,"duration":60,"attackPattern":"sustained","workerCount":3}
+2025-12-09T12:15:02.416Z: Stopping load test
+2025-12-09T12:17:36.360Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3}
+2025-12-09T12:18:50.893Z: Stopping load test
+2025-12-09T12:18:50.900Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":true,"bruteForce":false,"randomHeaders":false,"errorInducing":false}}
+2025-12-09T12:19:23.859Z: Stopping load test
+2025-12-09T12:21:56.153Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T12:22:05.082Z: Stopping load test
+2025-12-09T12:26:52.326Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T12:27:06.270Z: Stopping load test
+2025-12-09T12:32:41.144Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T12:32:45.351Z: Stopping load test
+2025-12-09T12:38:37.862Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T12:38:41.932Z: Stopping load test
+2025-12-09T12:40:16.670Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T12:40:26.286Z: Stopping load test
+2025-12-09T12:41:22.554Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T12:41:26.889Z: Stopping load test
+2025-12-09T12:42:38.980Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T12:42:43.922Z: Stopping load test
+2025-12-09T12:47:18.746Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":false,"errorInducing":true}}
+2025-12-09T12:47:24.262Z: Stopping load test
+2025-12-09T12:52:22.392Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":1000,"duration":600,"attackPattern":"sustained","workerCount":10,"securityOptions":{"endpointScanning":true,"bruteForce":false,"randomHeaders":false,"errorInducing":true}}
+2025-12-09T12:52:54.079Z: Stopping load test
+2025-12-09T12:53:39.971Z: Starting simplified load test: {"targetUrl":"http://localhost:3000/api/target","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":1000,"duration":600,"attackPattern":"sustained","workerCount":10,"securityOptions":{"endpointScanning":true,"bruteForce":false,"randomHeaders":false,"errorInducing":false}}
+2025-12-09T12:53:48.047Z: Stopping load test
+2025-12-09T15:37:13.042Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":false,"errorInducing":false}}
+2025-12-09T15:37:23.985Z: Stopping load test
+2025-12-09T16:07:48.364Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":true,"bruteForce":false,"randomHeaders":false,"errorInducing":false}}
+2025-12-09T16:07:55.792Z: Stopping load test
+2025-12-09T16:09:19.454Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"spike","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T16:09:25.371Z: Stopping load test
+2025-12-09T16:13:55.099Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":false,"errorInducing":true}}
+2025-12-09T16:14:02.953Z: Stopping load test
+2025-12-09T16:28:21.501Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":false,"errorInducing":false}}
+2025-12-09T16:28:29.529Z: Stopping load test
+2025-12-09T16:31:46.542Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"burst","workerCount":3,"securityOptions":{"endpointScanning":true,"bruteForce":false,"randomHeaders":false,"errorInducing":false}}
+2025-12-09T16:32:05.692Z: Stopping load test
+2025-12-09T16:34:11.701Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"spike","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":true,"errorInducing":false}}
+2025-12-09T16:34:32.096Z: Stopping load test
+2025-12-09T16:37:39.863Z: Starting simplified load test: {"targetUrl":"http://localhost:8080/public/main","httpMethod":"GET","params":[{"id":"1","key":"","value":""}],"headers":{},"authType":"none","requestBody":"","startRps":10,"maxRps":100,"duration":60,"attackPattern":"sustained","workerCount":3,"securityOptions":{"endpointScanning":false,"bruteForce":false,"randomHeaders":false,"errorInducing":true}}
+2025-12-09T16:37:48.321Z: Stopping load test
